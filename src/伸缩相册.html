@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>伸缩相册</title>
+    <style media="screen">
+      .box {
+        position: relative;
+        width: 664px;
+        height: 406px;
+        background: #5d75b1;
+        border-radius: 9px;
+        margin: 0 auto;
+        border: 18px solid #5d75b1;
+        overflow: hidden;
+      }
+      .box label {
+        width: 300px;
+        height: 400px;
+        border: 1px solid #333;
+        position: absolute;
+        top: 0;
+        transition: 1s;
+      }
+      .box label:nth-of-type(1) {
+        background: red;
+        left: 0px;
+      }
+      .box label:nth-of-type(2) {
+        background: green;
+        left: 70px;
+      }
+      .box label:nth-of-type(3) {
+        background: blue;
+        left: 140px;
+      }
+      .box label:nth-of-type(4) {
+        background: pink;
+        left: 210px;
+      }
+      .box label:nth-of-type(5) {
+        background: orange;
+        left: 280px;
+      }
+
+      .box input {
+        display: hidden;
+      }
+      .box input:checked~label {
+        transform: translateX(230px);
+        -webkit-transform: translateX(230px);
+      }
+
+
+      /*.box a {
+        display: inline-block;
+        width: 300px;
+        height: 400px;
+        border: 1px solid #333;
+        position: absolute;
+        top: 0;
+        transition: 1s;
+      }
+      .box a:nth-of-type(1) {
+        background: red;
+        left: 0px;
+      }
+      .box a:nth-of-type(2) {
+        background: green;
+        left: 70px;
+      }
+      .box a:nth-of-type(3) {
+        background: blue;
+        left: 140px;
+      }
+      .box a:nth-of-type(4) {
+        background: pink;
+        left: 210px;
+      }
+      .box a:nth-of-type(5) {
+        background: orange;
+        left: 280px;
+      }
+      .box .target-item:target~a {
+        transform: translateX(230px);
+      }*/
+    </style>
+  </head>
+
+  <body>
+    <!-- <div class="box">
+      <form>
+        <a href="#img1"></a>
+        <div class="target-item" id="img1"></div>
+        <a href="#img2"></a>
+        <div class="target-item" class="" id="img2"></div>
+        <a href="#img3"></a>
+        <div class="target-item" class="" id="img3"></div>
+      </form>
+    </div> -->
+    <div class="box">
+      <form>
+        <label for="img1"></label>
+        <input type="radio" id="img1" name="img"/>
+        <label for="img2"></label>
+        <input type="radio" id="img2" name="img"/>
+        <label for="img3"></label>
+        <input type="radio" id="img3" name="img"/>
+        <label for="img4"></label>
+        <input type="radio" id="img4" name="img"/>
+        <label for="img5"></label>
+        <input type="radio" id="img5" name="img"/>
+      </form>
+    </div>
+  </body>
+
+
+</html>
