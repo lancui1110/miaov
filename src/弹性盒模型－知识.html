@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>弹性盒模型</title>
+    <style media="screen">
+      body {
+        margin: 0;
+      }
+      #box {
+        height: 200px;
+        width: 200px;
+        border: 1px solid #333;
+        /*新版弹性盒模型*/
+        display: flex;
+        /*设置主轴方向为水平方向*/
+        /*flex-direction: row;*/
+        /*设置主轴方向为垂直方向*/
+        /*flex-direction: column;*/
+
+        /*设置主轴方向为水平反序方向*/
+        /*flex-direction: row-reverse;*/
+        /*设置主轴方向为垂直反序方向*/
+        /*flex-direction: column-reverse;*/
+
+        /*元素在主轴开始位置，富裕空间在主轴的结束位置*/
+        /*justify-content:flex-start;*/
+        /*元素在主轴结束位置，富裕空间在主轴的开始位置*/
+        /*justify-content:flex-end;*/
+        /*元素在主轴中间，富裕空间在主轴的两侧位置*/
+        /*justify-content:center;*/
+        /*富裕空间平均分配在每两个元素中间的位置*/
+        /*justify-content:space-between;*/
+        /*富裕空间平均分配在每两个元素两侧的位置----老的无*/
+        /*justify-content:space-around;*/
+
+        /*元素再侧轴开始位置，富裕空间在主轴的结束位置*/
+        /*align-items: flex-start;*/
+        /*元素再侧轴结束位置，富裕空间在主轴的开始位置*/
+        /*align-items: flex-end;*/
+        /*元素在侧轴中间，富裕空间在侧轴的两侧位置*/
+        /*align-items: center;*/
+        /*根据侧轴方向上文字的基线对齐----老的无*/
+        /*align-items: baseline;*/
+
+
+        /*老版弹性盒模型*/
+        display: -webkit-box;
+        /*设置主轴方向为水平方向*/
+        /*-webkit-box-orient: horizontal;*/
+        /*设置主轴方向为垂直方向*/
+        /*-webkit-box-orient: vertical;*/
+
+        /*设置主轴方向为反序方向*/
+        /*-webkit-box-direction: reverse;*/
+        /*设置主轴方向为反序方向*/
+        /*-webkit-box-direction: normal;*/
+
+
+        /*元素在主轴开始位置，富裕空间在主轴的结束位置*/
+        /*-webkit-box-pack:start;*/
+        /*元素在主轴结束位置，富裕空间在主轴的开始位置*/
+        /*-webkit-box-pack:end;*/
+        /*元素在主轴中间，富裕空间在主轴的两侧位置*/
+        /*-webkit-box-pack:center;*/
+        /*富裕空间平均分配在每两个元素中间的位置*/
+        /*-webkit-box-pack:justify;*/
+
+        /*元素再侧轴开始位置，富裕空间在主轴的结束位置*/
+        /*-webkit-box-align: start;*/
+        /*元素再侧轴结束位置，富裕空间在主轴的开始位置*/
+        /*-webkit-box-align: end;*/
+        /*元素在侧轴中间，富裕空间在侧轴的两侧位置*/
+        /*-webkit-box-align: center;*/
+
+      }
+      #box div {
+        height: 20px;
+        width: 20px;
+        background: red;
+
+        /*新版*/
+        /*子元素的尺寸＝盒子的尺寸＊子元素的box-flex属性值/所有子元素的box-flex属性值的和*/
+        /*flex-grow: 1;*/
+
+        /*老版*/
+        /*-webkit-box-flex: 1;*/
+
+      }
+
+      #box div:nth-of-type(1) {
+        /*显示的顺序，数值越小越靠前，可以是0或者负数*/
+        /*order: 5;*/
+        /*显示的顺序，数值越小越靠前，0或者负数,处理成1*/
+        -webkit-box-ordinal-group: 5;
+      }
+      #box div:nth-of-type(2) {
+        /*order: 2;*/
+        -webkit-box-ordinal-group: 2;
+      }
+      #box div:nth-of-type(3) {
+        /*order: 0;*/
+        -webkit-box-ordinal-group: 0;
+      }
+      #box div:nth-of-type(4) {
+        /*order: -2;*/
+        -webkit-box-ordinal-group: -2;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="box">
+      <div>1</div>
+      <div>2</div>
+      <div>3</div>
+      <div>4</div>
+    </div>
+  </body>
+  <script>
+
+  </script>
+</html>

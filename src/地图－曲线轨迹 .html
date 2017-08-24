@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+	<style type="text/css">
+		body, html{width: 100%;height: 100%;margin:0;font-family:"微软雅黑";}
+		#allmap{height:700px;width:100%;}
+		#r-result{width:100%;}
+	</style>
+  <script src="http://api.map.baidu.com/api?v=2.0&ak=D5b939310cda4811e6587c8a535e1edc"></script>
+	<title>百度地图－添加/删除覆盖物</title>
+</head>
+<body>
+	<div id="allmap"></div>
+	<div id="r-result">
+		<input type="button" onclick="createPolylines();" value="添加覆盖物" />
+		<input type="button" onclick="remove_overlay();" value="删除覆盖物" />
+	</div>
+</body>
+</html>
+<script type="text/javascript">
+	// 百度地图API功能
+var map = new BMap.Map("allmap");
+map.centerAndZoom(new BMap.Point(121.21036, 31.022461), 15);
+// map.centerAndZoom("上海",15);
+// 设置地图允许的最小级别。取值不得小于地图类型所允许的最小级别
+// 启用滚轮放大缩小
+map.enableScrollWheelZoom(true);
+// 禁止双击放大
+map.disableDoubleClickZoom();
+// 禁用地图惯性拖拽
+map.disableInertialDragging();
+// var marker = new BMap.Marker(new BMap.Point(116.404, 39.915)); // 创建点
+// 缩放控件
+var top_left_navigation = new BMap.NavigationControl(); //左上角，添加默认缩放平移控件
+map.addControl(top_left_navigation);
+
+function setLabel(lon, lat, title, x, y) {
+    var offset;
+    if (x && y) {
+        offset = new BMap.Size(x, y)
+    } else {
+        offset = new BMap.Size(2, 8)
+    }
+    var label = new BMap.Label('<div class="houselabel">' + title + '</div>', {
+        position: new BMap.Point(lon, lat),
+        offset: offset
+    });
+    // map.addOverlay(label); // 将标注添加到地图中
+    return label
+}
+
+//创建折线
+function createPolyline() {
+    var points = window.pointsData.rows
+    var pointArr = []
+    for (var i = 0; i < points.length; i++) {
+        if (i > 5) break
+        var p = points[i]
+        pointArr.push(new BMap.Point(p.longitude, p.latitude))
+            // 画点
+        setLabel(p.longitude, p.latitude, i)
+    }
+    console.log(JSON.stringify(pointArr));
+    return new BMap.Polyline(pointArr, {
+        strokeColor: "blue",
+        strokeWeight: 2,
+        strokeOpacity: 0.5
+    }); //创建折线
+}
+// var polyline = createPolyline()
+//
+function addArrow(polyline, length, angleValue) { //绘制箭头的函数
+    var linePoint = polyline.getPath(); //线的坐标串
+    var arrowCount = linePoint.length;
+    console.log('arrowCount', arrowCount);
+    for (var i = 1; i < arrowCount; i++) { //在拐点处绘制箭头
+        var pixelStart = map.pointToPixel(linePoint[i - 1]);
+        var pixelEnd = map.pointToPixel(linePoint[i]);
+        var angle = angleValue; //箭头和主线的夹角
+        var r = length; // r/Math.sin(angle)代表箭头长度
+        var delta = 0; //主线斜率，垂直时无斜率
+        var param = 0; //代码简洁考虑
+        var pixelTemX, pixelTemY; //临时点坐标
+        var pixelX, pixelY, pixelX1, pixelY1; //箭头两个点
+        if (pixelEnd.x - pixelStart.x == 0) { //斜率不存在是时
+            pixelTemX = pixelEnd.x;
+            if (pixelEnd.y > pixelStart.y) {
+                pixelTemY = pixelEnd.y - r;
+            } else {
+                pixelTemY = pixelEnd.y + r;
+            }
+            //已知直角三角形两个点坐标及其中一个角，求另外一个点坐标算法
+            pixelX = pixelTemX - r * Math.tan(angle);
+            pixelX1 = pixelTemX + r * Math.tan(angle);
+            pixelY = pixelY1 = pixelTemY;
+        } else //斜率存在时
+        {
+            delta = (pixelEnd.y - pixelStart.y) / (pixelEnd.x - pixelStart.x);
+            param = Math.sqrt(delta * delta + 1);
+
+            if ((pixelEnd.x - pixelStart.x) < 0) //第二、三象限
+            {
+                pixelTemX = pixelEnd.x + r / param;
+                pixelTemY = pixelEnd.y + delta * r / param;
+            } else //第一、四象限
+            {
+                pixelTemX = pixelEnd.x - r / param;
+                pixelTemY = pixelEnd.y - delta * r / param;
+            }
+            //已知直角三角形两个点坐标及其中一个角，求另外一个点坐标算法
+            pixelX = pixelTemX + Math.tan(angle) * r * delta / param;
+            pixelY = pixelTemY - Math.tan(angle) * r / param;
+
+            pixelX1 = pixelTemX - Math.tan(angle) * r * delta / param;
+            pixelY1 = pixelTemY + Math.tan(angle) * r / param;
+        }
+
+        var pointArrow = map.pixelToPoint(new BMap.Pixel(pixelX, pixelY));
+        var pointArrow1 = map.pixelToPoint(new BMap.Pixel(pixelX1, pixelY1));
+        var Arrow = new BMap.Polyline([
+            pointArrow,
+            linePoint[i],
+            pointArrow1
+        ], {
+            strokeColor: "blue",
+            strokeWeight: 3,
+            strokeOpacity: 0.5
+        });
+        //map.addOverlay(Arrow);
+        return Arrow
+    }
+}
+
+var pointsLines = []
+
+function createPolylines() {
+    var points = window.pointsData.rows
+    for (var i = 1; i < points.length; i = i + 1) {
+        // if (i > 5) break
+
+        // 画一条线
+        var p0 = points[i - 1],
+            p = points[i]
+        var pointArr = []
+        pointArr.push(new BMap.Point(p0.longitude, p0.latitude))
+        pointArr.push(new BMap.Point(p.longitude, p.latitude))
+        var line = new BMap.Polyline(pointArr, {
+            strokeColor: "blue",
+            strokeWeight: 2,
+            strokeOpacity: 0.5
+        })
+
+        // 先加一层灰色
+        var line2 = new BMap.Polyline(pointArr, {
+            strokeColor: "#C0CADB",
+            strokeWeight: 2,
+            strokeOpacity: 0.5
+        })
+        map.addOverlay(line2)
+
+        // 画箭头
+        var arrow = addArrow(line, 10, Math.PI / 7);
+
+        // 画点
+        var point = setLabel(p.longitude, p.latitude, i)
+
+        pointsLines.push({
+            point: point,
+            line: line,
+            arrow: arrow
+        })
+    }
+
+
+    for (var i = 0; i < pointsLines.length; i++) {
+        var j = i
+        setTimeout((function(k) {
+            return function() {
+                var p = pointsLines[k]
+                map.addOverlay(p.point)
+
+                map.addOverlay(p.line)
+                map.addOverlay(p.arrow)
+
+                if (k >= 3) {
+                    // 把上一条删除
+                    var upLine = pointsLines[k - 3]
+                    map.removeOverlay(upLine.line);
+                    map.removeOverlay(upLine.arrow);
+
+                }
+                // upLine = pointsLines[k-1].line
+                // map.removeOverlay(upLine);
+            }
+        })(i), j * 500)
+    }
+}
+
+createPolylines()
+
+// var circle = new BMap.Circle(point,500,{strokeColor:"blue", strokeWeight:2, strokeOpacity:0.5}); //创建圆
+
+// var polygon = new BMap.Polygon([
+// 	new BMap.Point(116.387112,39.920977),
+// 	new BMap.Point(116.385243,39.913063),
+// 	new BMap.Point(116.394226,39.917988),
+// 	new BMap.Point(116.401772,39.921364),
+// 	new BMap.Point(116.41248,39.927893)
+// ], {strokeColor:"blue", strokeWeight:2, strokeOpacity:0.5});  //创建多边形
+
+// var pStart = new BMap.Point(116.392214,39.918985);
+// var pEnd = new BMap.Point(116.41478,39.911901);
+// var rectangle = new BMap.Polygon([
+// 	new BMap.Point(pStart.lng,pStart.lat),
+// 	new BMap.Point(pEnd.lng,pStart.lat),
+// 	new BMap.Point(pEnd.lng,pEnd.lat),
+// 	new BMap.Point(pStart.lng,pEnd.lat)
+// ], {strokeColor:"blue", strokeWeight:2, strokeOpacity:0.5});  //创建矩形
+
+//添加覆盖物
+function add_overlay() {
+    // map.addOverlay(marker);            //增加点
+    // map.addOverlay(polyline);          //增加折线
+    // map.addOverlay(circle);            //增加圆
+    // map.addOverlay(polygon);           //增加多边形
+    // map.addOverlay(rectangle);         //增加矩形
+}
+//清除覆盖物
+function remove_overlay() {
+    map.clearOverlays();
+}
+</script>

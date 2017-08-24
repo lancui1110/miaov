@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>瀑布流效果</title>
+    <style media="screen">
+      body, dl, dt, dd, p, h3,h4 {
+        margin: 0;
+        padding: 0;
+      }
+      a {
+        text-decoration: none;
+      }
+      img {
+        border: 0;
+      }
+      body {
+        font: 12px "微软雅黑";
+      }
+      .clearfix:after {
+        content: "";
+        display: block;
+        clear: both;
+      }
+      .clearfix {
+        *zoom: 1;
+        *overflow: hidden;
+      }
+
+      #container {
+        position: relative;
+        width: 1000px;
+        border: 1px solid red;
+        margin: 50px auto 0;
+      }
+      #container img {
+        position: absolute;
+        border: 1px solid #ededed;
+      }
+      #loader {
+        width: 1005;
+        height: 60px;
+        background: url('loader.gif') no-repeat center #fff;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+      }
+
+      #loader.hide {
+        display: none;
+      }
+
+    </style>
+  </head>
+
+  <body>
+    <div id="container">
+
+    </div>
+    <div id="loader" class="hide">
+      数据加载中。。。。
+    </div>
+  </body>
+  <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+  <script>
+    // 计算列
+    var oContainer = $('#container')
+    var oLoader = $('#loader')
+    var iWidth = 200 // 列宽
+    var iSPace = 10  // 间隔宽
+    var iOuterWidth = iWidth + iSPace  // 列实际宽
+    var iCells = 0   // 总列
+
+    var curPage = 0 // 页数
+    var isLoad = false // 是否正在加载
+
+
+    var arrT = []
+    var arrL = []
+
+    function setCells () {
+      iCells = Math.floor($(window).innerWidth() / iOuterWidth)
+      oContainer.css('width', iOuterWidth * iCells - iSPace)
+    }
+
+    setCells()
+
+    for (var i = 0; i < iCells; i++) {
+      arrT.push(0)
+      arrL.push(i * iOuterWidth)
+    }
+
+    function getData () {
+      resetLoader(true)
+
+      var url = 'http://www.wookmark.com/api/json/popular?callback=?'
+      $.getJSON(url, 'page=' + curPage, function (data) {
+        resetLoader(false)
+        
+        $.each(data, function (index, obj) {
+          var oImg = $('<img />')
+          oImg.attr('src', obj.image)
+          var iHight =  iWidth / obj.width * obj.height
+          oImg.css({width: iWidth, height: iHight})
+
+          var min = getMin()
+
+          oImg.css({
+            left: arrL[min],
+            top: arrT[min]
+          })
+          arrT[min] = arrT[min] + iHight
+
+          oContainer.append(oImg)
+        })
+      })
+    }
+    getData()
+
+    function getMin () {
+      var min = arrT[0], j = 0
+      for (var i = 1; i < arrT.length; i++) {
+        if (arrT[i] < min) {
+          min = arrT[i]
+          j = i
+        }
+      }
+      return j
+    }
+
+    $(document).scroll(function () {
+      console.log(1111);
+      if (!isLoad) {
+        curPage++
+        getData()
+      }
+    })
+
+    function resetLoader(load) {
+      isLoad = load
+      if (!isLoad) {
+        oLoader.removeClass('hide')
+      } else {
+        oLoader.addClass('hide')
+      }
+    }
+  </script>
+</html>

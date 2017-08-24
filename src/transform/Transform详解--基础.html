@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Transform详解--基础</title>
+    <style>
+      body {
+        margin: 0;
+      }
+      #box {
+        width: 100px;
+        border: 1px solid #333;
+        padding: 100px;
+      }
+      .div {
+        width: 100px;
+        height: 100px;
+        background: red;
+        margin: 10px 0;
+        transition: 3s;
+        /*transform-origin: left top;*/
+      }
+      #box:hover .div {
+        -webkit-transform:;
+        transform:;
+      }
+    </style>
+    <script type="text/javascript">
+      document.addEventListener('touchstart', function (e) {
+        e.preventDefault()
+      })
+      window.onload = function () {
+        var div = document.querySelectorAll('.div')
+        div[0].addEventListener('touchend', function () {
+          this.style.WebkitTransform = this.style.transform = 'scale(.5) '
+        })
+        div[1].addEventListener('touchend', function () {
+          this.style.WebkitTransform = this.style.transform = 'scale(.5) translate(100px) '
+        })
+        div[2].addEventListener('touchend', function () {
+          this.style.WebkitTransform = this.style.transform = 'translate(100px) scale(.5)'
+        })
+      }
+      /**
+       * transform-origin: center center; 变换原点，
+       * -webkit-transform-origin
+       * 参数：
+       *   关键字：left,top,center,right,bottom,
+       *   像素 0 0 即是左上角
+       *   百分比
+       *  影响的属性：
+       *    rotate,
+       *    skew,
+       *    scale
+       *    translate (不受影响)
+       *
+       */
+
+      /**  围绕中心点变化
+       *
+       * rotate 旋转 单位：deg
+       * rotate(90deg);
+       *
+       * skew 斜切 单位：deg
+       *   skewX
+       *   skewY
+       *   skew(20deg)
+       *
+       * scale(x, y) 缩放，(原来大小的多少倍) 单位：无
+       *   scaleX
+       *   scaleY
+       *   scale(.3, 2)
+       *
+       * translate 位移，位置的移动 单位：px
+       *   translateX
+       *   translateY
+       *   translate(100px, 100px)
+       */
+    </script>
+  </head>
+  <body>
+    <!--
+      transform: 变换
+      -webkit-transform －－移动端兼容
+
+      注意：先写的后执行，空格隔开
+      先执行translate，再scale
+      this.style.transform = 'scale(.3) translate(100px)'
+    -->
+
+    <!--  -->
+    <div id="box">
+      <div class="div">
+
+      </div>
+      <div class="div">
+
+      </div>
+      <div class="div">
+
+      </div>
+    </div>
+  </body>
+</html>
